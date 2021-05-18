@@ -8,7 +8,13 @@ const typeDefs = gql`
     confirmPassword: String!
   }
 
+  input LoginInput {
+    username: String!
+    password: String!
+  }
+
   type User {
+    id: ID!
     username: String!
     email: String!
     password: String!
@@ -24,11 +30,12 @@ const typeDefs = gql`
   }
 
   type Query {
-    getPosts: [Post!]
+    getPosts: [Post!]!
   }
 
   type Mutation {
-    register(input: RegisterInput!): User!
+    registerUser(input: RegisterInput!): User!
+    loginUser(input: LoginInput!): User
   }
 `;
 

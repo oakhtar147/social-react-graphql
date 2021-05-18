@@ -1,13 +1,51 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { UserInputError } = require("apollo-server");
+
+const {
+  validateRegisterInput,
+  validateLoginInput,
+} = require("../../utils/validators");
 
 // USER RESOLVERS
 
+function generateToken(user) {
+  return jwt.sign(
+    {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+    },
+    "some-very-secret-key-somewhere",
+    { expiresIn: "1h" }
+  );
+}
+
 module.exports = {
+  Query: {},
+
   Mutation: {
-    async register(_, { input }, ctx) {
-      const { username, email, password, confirmPassword } = input;
+    async registerUser(_, { input }, ctx) {
+      const { valid, errors } = validateRegisterInput(input);
+
+      if (!valid) {
+        throw new UserInputError(errors, {
+          errors,
+        });
+      }
+
+      const { username, email, password } = input;
       const hashedPassword = await bcrypt.hash(password, 12);
+
+      const userNameExists = await ctx.models.User.findOne({ username });
+
+      if (userNameExists) {
+        throw new UserInputError("Username already exists", {
+          errors: {
+            username: "Username is taken",
+          },
+        });
+      }
 
       const user = await new ctx.models.User({
         username,
@@ -16,17 +54,43 @@ module.exports = {
         createdAt: new Date().toISOString(),
       }).save();
 
-      const token = jwt.sign(
-        {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-        },
-        "some-very-secret-key-somewhere",
-        { expiresIn: "1h" }
-      );
+      const token = generateToken(user);
 
       return { ...user._doc, id: user._id, token };
+    },
+
+    async loginUser(_, { input }, ctx) {
+      const { valid, errors } = validateLoginInput(input);
+
+      if (!valid) {
+        throw new UserInputError(errors, {
+          errors,
+        });
+      }
+
+      const { username, password } = input;
+      const userExists = await ctx.models.User.findOne({ username });
+
+      if (!userExists) {
+        errors.general = "User not found";
+        throw new UserInputError(errors, {
+          errors,
+        });
+      }
+
+      const user = await ctx.models.User.findOne({
+        username,
+      });
+
+      const match = await bcrypt.compare(password, user.password);
+
+      if (match) {
+        const token = generateToken(user);
+        return { ...user._doc, id: user._id, token };
+      }
+
+      errors.noMatch = "Credentials do not match";
+      throw new UserInputError(errors.noMatch, { errors });
     },
   },
 };
