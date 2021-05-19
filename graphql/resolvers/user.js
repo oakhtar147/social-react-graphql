@@ -7,8 +7,6 @@ const {
   validateLoginInput,
 } = require("../../utils/validators");
 
-// USER RESOLVERS
-
 function generateToken(user) {
   return jwt.sign(
     {
@@ -22,7 +20,11 @@ function generateToken(user) {
 }
 
 module.exports = {
-  Query: {},
+  Query: {
+    getUsers(_, __, ctx) {
+      return ctx.models.User.find();
+    },
+  },
 
   Mutation: {
     async registerUser(_, { input }, ctx) {
