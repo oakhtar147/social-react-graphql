@@ -1,10 +1,44 @@
 import React from "react";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+  ApolloLink,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
 
 import App from "./App";
 
-const client = new ApolloClient({
+const httpLink = createHttpLink({
   uri: "http://localhost:4000/",
+});
+
+const delay = setContext(
+  (request) =>
+    new Promise((success, fail) => {
+      setTimeout(() => {
+        success();
+      }, 2000);
+    })
+);
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem("jwt");
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      Authorization: token ? `Bearer ${token}` : "",
+    },
+  };
+});
+
+const link = ApolloLink.from([authLink, httpLink]);
+
+const client = new ApolloClient({
+  link,
   cache: new InMemoryCache(),
 });
 

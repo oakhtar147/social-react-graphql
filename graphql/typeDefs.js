@@ -27,8 +27,8 @@ const typeDefs = gql`
     body: String!
     username: String!
     createdAt: String!
-    comments: [Comment!]!
-    likes: [Like!]!
+    comments: [Comment]!
+    likes: [Like]!
     commentCount: Int!
     likeCount: Int!
   }
@@ -57,6 +57,7 @@ const typeDefs = gql`
     loginUser(input: LoginInput!): User
     createPost(body: String!): Post!
     deletePost(postId: String!): Post!
+    deletePosts: String!
     createComment(postId: String!, body: String!): Post!
     deleteComment(postId: String!, commentId: String!): Post!
     likePost(postId: String!): Post!

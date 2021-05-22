@@ -20,11 +20,11 @@ function generateToken(user) {
 }
 
 module.exports = {
-  Query: {
-    getUsers(_, __, ctx) {
-      return ctx.models.User.find();
-    },
-  },
+  // Query: {
+  //   getUsers(_, __, ctx) {
+  //     return ctx.models.User.find();
+  //   },
+  // },
 
   Mutation: {
     async registerUser(_, { input }, ctx) {
@@ -91,7 +91,7 @@ module.exports = {
         return { ...user._doc, id: user._id, token };
       }
 
-      errors.noMatch = "Credentials do not match";
+      errors.noMatch = "Username or password is incorrect";
       throw new UserInputError(errors.noMatch, { errors });
     },
   },

@@ -15,7 +15,6 @@ module.exports = {
 
     async getPost(_, { postId }, ctx) {
       try {
-        console.log(postId);
         const post = await ctx.models.Post.findById(postId);
         return post;
       } catch (err) {
@@ -46,6 +45,11 @@ module.exports = {
       } catch (err) {
         throw new Error(err);
       }
+    },
+
+    async deletePosts(_, __, ctx) {
+      await ctx.models.Post.deleteMany();
+      return "Deleted";
     },
 
     async deletePost(_, { postId }, ctx) {
