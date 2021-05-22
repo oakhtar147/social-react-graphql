@@ -7,12 +7,13 @@ import PostForm from "../components/PostForm";
 import { AuthContext } from "../context/auth";
 
 import { GET_POSTS } from "../utils/graphql";
+import Loader from "../components/Loader";
 
 export function Home() {
   const { user } = useContext(AuthContext);
   const { data, loading, error } = useQuery(GET_POSTS);
 
-  if (loading || !data) return <p>Loading</p>;
+  if (loading || !data) return <Loader />;
   if (error) return <p>Error</p>;
 
   return (
@@ -29,14 +30,12 @@ export function Home() {
         {loading ? (
           <h1>Loading Posts...</h1>
         ) : (
-          <Transition.Group>
-            {data.getPosts &&
-              data.getPosts.map((post) => (
-                <Grid.Column key={post.id} style={{ marginBottom: 20 }}>
-                  <PostCard post={post} />
-                </Grid.Column>
-              ))}
-          </Transition.Group>
+          data.getPosts &&
+          data.getPosts.map((post) => (
+            <Grid.Column key={post.id} style={{ marginBottom: 20 }}>
+              <PostCard post={post} />
+            </Grid.Column>
+          ))
         )}
       </Grid.Row>
     </Grid>

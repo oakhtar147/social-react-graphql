@@ -14,14 +14,14 @@ const httpLink = createHttpLink({
   uri: "http://localhost:4000/",
 });
 
-// const delay = setContext(
-//   (request) =>
-//     new Promise((success, fail) => {
-//       setTimeout(() => {
-//         success();
-//       }, 2000);
-//     })
-// );
+const delay = setContext(
+  (request) =>
+    new Promise((success, fail) => {
+      setTimeout(() => {
+        success();
+      }, 800);
+    })
+);
 
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
@@ -35,7 +35,7 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const link = ApolloLink.from([authLink, httpLink]);
+const link = ApolloLink.from([authLink, delay, httpLink]);
 
 const client = new ApolloClient({
   link,

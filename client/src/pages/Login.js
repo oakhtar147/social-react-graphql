@@ -5,6 +5,7 @@ import { useMutation } from "@apollo/client";
 
 import { useForm } from "../utils/useForm";
 import { AuthContext } from "../context/auth";
+import { LOGIN_USER } from "../utils/graphql";
 
 export function Login({ history }) {
   const initialValues = {
@@ -67,13 +68,3 @@ export function Login({ history }) {
     </div>
   );
 }
-
-const LOGIN_USER = gql`
-  mutation LOGIN_USER($loginInfo: LoginInput!) {
-    loginUser(input: $loginInfo) {
-      token
-      id
-      username
-    }
-  }
-`;

@@ -5,6 +5,7 @@ import { useMutation } from "@apollo/client";
 
 import { useForm } from "../utils/useForm";
 import { AuthContext } from "../context/auth";
+import { REGISTER_USER } from "../utils/graphql";
 
 export function Register({ history }) {
   const context = useContext(AuthContext);
@@ -88,14 +89,3 @@ export function Register({ history }) {
     </div>
   );
 }
-
-const REGISTER_USER = gql`
-  mutation REGISTER($userInfo: RegisterInput!) {
-    registerUser(input: $userInfo) {
-      token
-      id
-      username
-      createdAt
-    }
-  }
-`;
