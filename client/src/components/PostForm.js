@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Form, TextArea } from "semantic-ui-react";
-import { useMutation, gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import moment from "moment";
 
 import { useForm } from "../utils/useForm";
@@ -16,6 +16,7 @@ function PostForm() {
     user: { username },
   } = useContext(AuthContext);
   const { onChange, onSubmit, values } = useForm(wrapCreatePost, initialValues);
+  const [error, setError] = useState();
 
   const [createPost, newPost] = useMutation(CREATE_POST, {
     update(cache, { data: createPost }) {
@@ -31,6 +32,9 @@ function PostForm() {
       });
       values.body = "";
     },
+    onError(err) {
+      setError(err.graphQLErrors[0].message);
+    },
     variables: values,
     optimisticResponse: {
       __typename: "Mutation",
@@ -39,7 +43,7 @@ function PostForm() {
         id: Math.round(Math.random() * -1000000) + "",
         username: username,
         body: values.body,
-        createdAt: moment(new Date()).fromNow(),
+        createdAt: moment(new Date().toISOString()).fromNow(),
         comments: [],
         commentCount: 0,
         likes: [],
@@ -52,22 +56,32 @@ function PostForm() {
     createPost();
   }
 
-  if (newPost.error) return <p>Error</p>;
-
   return (
-    <Form onSubmit={onSubmit} className={newPost.loading ? "loadng" : ""}>
-      <h2 style={{ marginTop: 0 }}>Create A Post</h2>
-      <TextArea
-        name="body"
-        placeholder="Hi World!"
-        onChange={onChange}
-        value={values.body}
-        style={{ minHeight: 80 }}
-      />
-      <Button type="submit" color="teal" style={{ margin: 10, float: "right" }}>
-        Post
-      </Button>
-    </Form>
+    <>
+      <Form onSubmit={onSubmit} className={newPost.loading ? "loadng" : ""}>
+        <h2 style={{ marginTop: 0 }}>Create A Post</h2>
+        <TextArea
+          name="body"
+          placeholder="Hi World!"
+          onChange={onChange}
+          value={values.body}
+          style={{ minHeight: 80 }}
+        />
+        <Button type="submit" color="teal" style={{ margin: 10 }}>
+          Post
+        </Button>
+        {error && (
+          <div
+            className="ui error message"
+            style={{ margin: 10, display: "inline-block" }}
+          >
+            <ul className="list">
+              <li>{error}</li>
+            </ul>
+          </div>
+        )}
+      </Form>
+    </>
   );
 }
 

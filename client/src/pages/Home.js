@@ -12,7 +12,6 @@ export function Home() {
   const { user } = useContext(AuthContext);
   const { data, loading, error } = useQuery(GET_POSTS);
 
-  console.log(data);
   if (loading || !data) return <p>Loading</p>;
   if (error) return <p>Error</p>;
 
@@ -33,8 +32,8 @@ export function Home() {
           <Transition.Group>
             {data.getPosts &&
               data.getPosts.map((post) => (
-                <Grid.Column style={{ marginBottom: 20 }}>
-                  <PostCard key={post.id} post={post} />
+                <Grid.Column key={post.id} style={{ marginBottom: 20 }}>
+                  <PostCard post={post} />
                 </Grid.Column>
               ))}
           </Transition.Group>

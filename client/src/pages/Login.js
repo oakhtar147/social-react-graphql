@@ -7,14 +7,13 @@ import { useForm } from "../utils/useForm";
 import { AuthContext } from "../context/auth";
 
 export function Login({ history }) {
-  const context = useContext(AuthContext);
-  const [errors, setErrors] = useState({});
   const initialValues = {
     username: "",
     password: "",
   };
-
   const { onChange, onSubmit, values } = useForm(wrapLoginUser, initialValues);
+  const context = useContext(AuthContext);
+  const [errors, setErrors] = useState({});
 
   const [loginUser, { loading }] = useMutation(LOGIN_USER, {
     update(_, result) {

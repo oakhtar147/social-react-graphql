@@ -46,3 +46,16 @@ export const CREATE_POST = gql`
     }
   }
 `;
+
+export const LIKE_POST = gql`
+  mutation likePost($postId: String!) {
+    likePost(postId: $postId) {
+      id
+      likeCount
+      likes {
+        id
+        username
+      }
+    }
+  }
+`;
