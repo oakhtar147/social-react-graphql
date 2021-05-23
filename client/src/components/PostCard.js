@@ -5,6 +5,7 @@ import moment from "moment";
 
 import LikeButton from "./LikeButton";
 import { AuthContext } from "../context/auth";
+import DeleteButton from "./DeleteButton";
 
 function PostCard({ post }) {
   const { user } = useContext(AuthContext);
@@ -39,15 +40,7 @@ function PostCard({ post }) {
             {commentCount}
           </Label>
         </Button>
-        {user && user.username === username && (
-          <Button
-            as="div"
-            color="red"
-            onClick={() => console.log("DELETE")}
-            icon="trash"
-            floated="right"
-          />
-        )}
+        {user && user.username === username && <DeleteButton id={id} />}
       </Card.Content>
     </Card>
   );

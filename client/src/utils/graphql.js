@@ -64,6 +64,38 @@ export const GET_POST = gql`
   ${POST_DETAILS}
 `;
 
+export const DELETE_POST = gql`
+  mutation deletePost($postId: String!) {
+    deletePost(postId: $postId) {
+      id
+    }
+  }
+`;
+
+export const CREATE_COMMENT = gql`
+  mutation createComment($postId: String!, $body: String!) {
+    createComment(postId: $postId, body: $body) {
+      id
+      comments {
+        id
+        username
+        body
+        createdAt
+      }
+      commentCount
+    }
+  }
+`;
+
+export const DELETE_COMMENT = gql`
+  mutation deleteComment($postId: String!, $commentId: String!) {
+    deleteComment(postId: $postId, commentId: $commentId) {
+      id
+      commentCount
+    }
+  }
+`;
+
 // USER
 
 const USER_ESSENTIALS = gql`

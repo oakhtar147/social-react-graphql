@@ -14,19 +14,17 @@ const httpLink = createHttpLink({
   uri: "http://localhost:4000/",
 });
 
-const delay = setContext(
-  (request) =>
-    new Promise((success, fail) => {
-      setTimeout(() => {
-        success();
-      }, 800);
-    })
-);
+// const delay = setContext(
+//   (request) =>
+//     new Promise((success, fail) => {
+//       setTimeout(() => {
+//         success();
+//       }, 800);
+//     })
+// );
 
 const authLink = setContext((_, { headers }) => {
-  // get the authentication token from local storage if it exists
   const token = localStorage.getItem("jwt");
-  // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
@@ -35,7 +33,7 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const link = ApolloLink.from([authLink, delay, httpLink]);
+const link = ApolloLink.from([authLink, httpLink]);
 
 const client = new ApolloClient({
   link,

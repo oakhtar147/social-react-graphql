@@ -14,7 +14,9 @@ function LikeButton({ details: { user, id, likeCount, likes } }) {
     }
   }, [user, likes]);
 
-  const [likePost] = useMutation(LIKE_POST, { variables: { postId: id } });
+  const [likePost] = useMutation(LIKE_POST, {
+    variables: { postId: id },
+  });
 
   const likePostEffects = () => {
     likePost();

@@ -43,7 +43,7 @@ function PostForm() {
         id: Math.round(Math.random() * -1000000) + "",
         username: username,
         body: values.body,
-        createdAt: moment(new Date().toISOString()).fromNow(),
+        createdAt: Date.now(),
         comments: [],
         commentCount: 0,
         likes: [],
