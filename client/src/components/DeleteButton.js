@@ -27,7 +27,8 @@ function DeleteButton({ id, commentId, match, history }) {
     optimisticResponse: {
       __typename: "Mutation",
       deletePost: {
-        id,
+        __typename: "Post",
+        id: Math.round(Math.random() * 1000000) + "",
       },
     },
   });

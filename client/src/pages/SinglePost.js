@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import {
   Button,
@@ -21,6 +21,7 @@ export function SinglePost({ match }) {
   const [newComment, setNewComment] = useState("");
   const { user } = useContext(AuthContext);
   const { postId } = match.params;
+  const commentInputRef = useRef(null);
 
   const { loading, error, data } = useQuery(GET_POST, {
     variables: { postId },
@@ -30,12 +31,12 @@ export function SinglePost({ match }) {
     variables: { postId, body: newComment },
     update(cache, { data: createComment }) {
       setNewComment("");
+      commentInputRef.current.blur();
       const { getPost: post } = cache.readQuery({
         query: GET_POST,
         variables: { postId },
       });
 
-      console.log(createComment);
       const updatedComments = [createComment.createComment, ...post.comments];
 
       cache.writeQuery({
@@ -59,12 +60,12 @@ export function SinglePost({ match }) {
     body,
     createdAt,
     likes,
+    comments: allComments,
     likeCount,
-    comments,
     commentCount,
   } = data.getPost;
 
-  console.log(comments.slice(1));
+  const comments = allComments.slice(1);
 
   function optimisticCreateComment() {
     addComment();
@@ -109,25 +110,30 @@ export function SinglePost({ match }) {
           </Card>
           {user && (
             <Card fluid>
-              <p>Comment</p>
-              <Form>
-                <div className="ui action input fluid">
-                  <input
-                    type="text"
-                    placeholder="Comment..."
-                    name="comment"
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={newComment.trim() === ""}
-                  onClick={optimisticCreateComment}
-                >
-                  Submit
-                </button>
-              </Form>
+              <Card.Content>
+                <p>Comment</p>
+                <Form>
+                  <div className="ui action input fluid">
+                    <input
+                      type="text"
+                      placeholder="Comment..."
+                      name="comment"
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      ref={commentInputRef}
+                    />
+                  </div>
+                  <button
+                    style={{ marginTop: 10 }}
+                    type="submit"
+                    className="ui button teal"
+                    disabled={newComment.trim() === ""}
+                    onClick={optimisticCreateComment}
+                  >
+                    Submit
+                  </button>
+                </Form>
+              </Card.Content>
             </Card>
           )}
           {comments.map((comment) => (
